@@ -67,17 +67,49 @@ export default class DataBus {
   }
 
   /**
+   * 获取升级所需分数表
+   * 早期等级升级容易，后期等级升级困难
+   */
+  getUpgradeRequirements() {
+    return [0, 50, 120, 220, 350, 520, 750]; // Level 0->1需要50分，1->2需要120分，以此类推
+  }
+
+  /**
    * 检查是否需要升级
-   * 每100分升级一次
+   * 使用非线性升级系统
    */
   checkUpgrade() {
-    const upgradesAvailable = Math.floor(this.score / 100);
-    if (upgradesAvailable > this.upgradeLevel) {
-      this.upgradeLevel = upgradesAvailable;
+    const requirements = this.getUpgradeRequirements();
+    let newLevel = 0;
+    
+    // 找到当前分数对应的等级
+    for (let i = 0; i < requirements.length; i++) {
+      if (this.score >= requirements[i]) {
+        newLevel = i;
+      } else {
+        break;
+      }
+    }
+    
+    if (newLevel > this.upgradeLevel) {
+      this.upgradeLevel = newLevel;
       this.lastUpgradeScore = this.score;
       return true;
     }
     return false;
+  }
+
+  /**
+   * 获取下次升级所需分数
+   */
+  getNextUpgradeScore() {
+    const requirements = this.getUpgradeRequirements();
+    const nextLevel = this.upgradeLevel + 1;
+    
+    if (nextLevel < requirements.length) {
+      return requirements[nextLevel];
+    }
+    return null; // 已达到最高等级
   }
 
   /**

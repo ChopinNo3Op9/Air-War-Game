@@ -44,10 +44,15 @@ export default class GameInfo extends Emitter {
     }
     
     // 显示距离下次升级的分数
-    const nextUpgradeScore = (GameGlobal.databus.upgradeLevel + 1) * 100;
-    const scoreToNext = nextUpgradeScore - score;
-    if (scoreToNext > 0) {
-      ctx.fillText(`Next: ${scoreToNext}`, 10, 90);
+    const nextUpgradeScore = GameGlobal.databus.getNextUpgradeScore();
+    if (nextUpgradeScore !== null) {
+      const scoreToNext = nextUpgradeScore - score;
+      if (scoreToNext > 0) {
+        ctx.fillText(`Next: ${scoreToNext}`, 10, 90);
+      }
+    } else {
+      // 已达到最高等级
+      ctx.fillText(`MAX LEVEL`, 10, 90);
     }
   }
 
