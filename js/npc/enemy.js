@@ -7,15 +7,30 @@ const ENEMY_HEIGHT = 60;
 const EXPLO_IMG_PREFIX = 'images/explosion';
 
 export default class Enemy extends Animation {
-  speed = Math.random() * 6 + 3; // 飞行速度
-
   constructor() {
     super(ENEMY_IMG_SRC, ENEMY_WIDTH, ENEMY_HEIGHT);
+    this.baseSpeed = Math.random() * 6 + 3; // 基础飞行速度
+    this.movementType = 'straight'; // 移动类型：straight, zigzag, sine
+    this.zigzagDirection = 1; // 之字形移动方向
+    this.sineOffset = Math.random() * Math.PI * 2; // 正弦波偏移
   }
 
   init() {
     this.x = this.getRandomX();
     this.y = -this.height;
+    this.startX = this.x; // 记录起始X位置
+
+    // 根据难度调整敌机属性
+    const speedMultiplier = GameGlobal.databus.getEnemySpeedMultiplier();
+    this.speed = this.baseSpeed * speedMultiplier;
+    
+    // 根据难度决定移动模式
+    const specialChance = GameGlobal.databus.getSpecialEnemyChance();
+    if (Math.random() < specialChance) {
+      this.movementType = Math.random() < 0.5 ? 'zigzag' : 'sine';
+    } else {
+      this.movementType = 'straight';
+    }
 
     this.isActive = true;
     this.visible = true;
@@ -46,10 +61,50 @@ export default class Enemy extends Animation {
 
     this.y += this.speed;
 
+    // 根据移动类型更新X坐标
+    switch (this.movementType) {
+      case 'zigzag':
+        this.updateZigzagMovement();
+        break;
+      case 'sine':
+        this.updateSineMovement();
+        break;
+      case 'straight':
+      default:
+        // 直线移动，不改变X坐标
+        break;
+    }
+
+    // 确保敌机不会移出屏幕边界
+    this.x = Math.max(0, Math.min(this.x, SCREEN_WIDTH - this.width));
+
     // 对象回收
     if (this.y > SCREEN_HEIGHT + this.height) {
       this.remove();
     }
+  }
+
+  /**
+   * 之字形移动模式
+   */
+  updateZigzagMovement() {
+    const zigzagSpeed = 2;
+    this.x += zigzagSpeed * this.zigzagDirection;
+    
+    // 碰到边界时改变方向
+    if (this.x <= 0 || this.x >= SCREEN_WIDTH - this.width) {
+      this.zigzagDirection *= -1;
+    }
+  }
+
+  /**
+   * 正弦波移动模式
+   */
+  updateSineMovement() {
+    const amplitude = 50; // 振幅
+    const frequency = 0.05; // 频率
+    const offset = Math.sin((this.y * frequency) + this.sineOffset) * amplitude;
+    this.x = this.startX + offset;
   }
 
   destroy() {

@@ -41,11 +41,12 @@ export default class Main {
 
   /**
    * 随着帧数变化的敌机生成逻辑
-   * 帧数取模定义成生成的频率
+   * 帧数取模定义成生成的频率，根据玩家等级动态调整
    */
   enemyGenerate() {
-    // 每30帧生成一个敌机
-    if (GameGlobal.databus.frame % ENEMY_GENERATE_INTERVAL === 0) {
+    // 根据玩家升级等级调整生成频率
+    const spawnInterval = GameGlobal.databus.getEnemySpawnInterval();
+    if (GameGlobal.databus.frame % spawnInterval === 0) {
       const enemy = GameGlobal.databus.pool.getItemByClass('enemy', Enemy); // 从对象池获取敌机实例
       enemy.init(); // 初始化敌机
       GameGlobal.databus.enemys.push(enemy); // 将敌机添加到敌机数组中

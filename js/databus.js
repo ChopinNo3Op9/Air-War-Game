@@ -71,7 +71,7 @@ export default class DataBus {
    * 早期等级升级容易，后期等级升级困难
    */
   getUpgradeRequirements() {
-    return [0, 50, 120, 220, 350, 520, 750]; // Level 0->1需要50分，1->2需要120分，以此类推
+    return [0, 10, 30, 60, 100, 150];
   }
 
   /**
@@ -117,5 +117,33 @@ export default class DataBus {
    */
   getUpgradeLevel() {
     return Math.min(this.upgradeLevel, 5); // 最大升级到5级
+  }
+
+  /**
+   * 获取敌机生成间隔（基于升级等级）
+   * 等级越高，敌机生成越频繁
+   */
+  getEnemySpawnInterval() {
+    const baseInterval = 30;
+    const level = this.getUpgradeLevel();
+    return Math.max(baseInterval - (level * 4), 10); // 最快每10帧生成一个
+  }
+
+  /**
+   * 获取敌机速度倍数（基于升级等级）
+   * 等级越高，敌机飞得越快
+   */
+  getEnemySpeedMultiplier() {
+    const level = this.getUpgradeLevel();
+    return 1 + (level * 0.3); // 每级增加30%速度
+  }
+
+  /**
+   * 获取敌机变异概率（基于升级等级）
+   * 等级越高，越容易出现特殊敌机
+   */
+  getSpecialEnemyChance() {
+    const level = this.getUpgradeLevel();
+    return Math.min(level * 0.15, 0.6); // 最高60%概率出现特殊敌机
   }
 }
