@@ -13,6 +13,8 @@ export default class DataBus {
   animations = []; // 存储动画
   frame = 0; // 当前帧数
   score = 0; // 当前分数
+  upgradeLevel = 0; // 升级等级
+  lastUpgradeScore = 0; // 上次升级时的分数
   isGameOver = false; // 游戏是否结束
   pool = new Pool(); // 初始化对象池
 
@@ -27,6 +29,8 @@ export default class DataBus {
   reset() {
     this.frame = 0; // 当前帧数
     this.score = 0; // 当前分数
+    this.upgradeLevel = 0; // 升级等级
+    this.lastUpgradeScore = 0; // 上次升级时的分数
     this.bullets = []; // 存储子弹
     this.enemys = []; // 存储敌人
     this.animations = []; // 存储动画
@@ -60,5 +64,26 @@ export default class DataBus {
     if (temp) {
       this.pool.recover('bullet', bullet); // 回收子弹到对象池
     }
+  }
+
+  /**
+   * 检查是否需要升级
+   * 每100分升级一次
+   */
+  checkUpgrade() {
+    const upgradesAvailable = Math.floor(this.score / 100);
+    if (upgradesAvailable > this.upgradeLevel) {
+      this.upgradeLevel = upgradesAvailable;
+      this.lastUpgradeScore = this.score;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 获取当前升级等级
+   */
+  getUpgradeLevel() {
+    return Math.min(this.upgradeLevel, 5); // 最大升级到5级
   }
 }

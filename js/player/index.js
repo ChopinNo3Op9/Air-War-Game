@@ -122,10 +122,127 @@ export default class Player extends Animation {
    * 射击时机由外部决定
    */
   shoot() {
+    const upgradeLevel = GameGlobal.databus.getUpgradeLevel();
+    
+    switch (upgradeLevel) {
+      case 0:
+        // Level 0: Single bullet
+        this.shootSingle();
+        break;
+      case 1:
+        // Level 1: Double bullets
+        this.shootDouble();
+        break;
+      case 2:
+        // Level 2: Triple bullets
+        this.shootTriple();
+        break;
+      case 3:
+        // Level 3: Spread pattern
+        this.shootSpread();
+        break;
+      case 4:
+        // Level 4: Enhanced spread
+        this.shootEnhancedSpread();
+        break;
+      default:
+        // Level 5+: Maximum firepower
+        this.shootMaximum();
+        break;
+    }
+    
+    GameGlobal.musicManager.playShoot(); // 播放射击音效
+  }
+
+  /**
+   * 单发射击
+   */
+  shootSingle() {
     const bullet = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
     bullet.init(this.x + this.width / 2 - bullet.width / 2, this.y - 10, 10);
     GameGlobal.databus.bullets.push(bullet);
-    GameGlobal.musicManager.playShoot(); // 播放射击音效
+  }
+
+  /**
+   * 双发射击
+   */
+  shootDouble() {
+    const bullet1 = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+    const bullet2 = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+    
+    bullet1.init(this.x + this.width / 3 - bullet1.width / 2, this.y - 10, 10);
+    bullet2.init(this.x + (this.width * 2) / 3 - bullet2.width / 2, this.y - 10, 10);
+    
+    GameGlobal.databus.bullets.push(bullet1, bullet2);
+  }
+
+  /**
+   * 三发射击
+   */
+  shootTriple() {
+    const bullet1 = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+    const bullet2 = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+    const bullet3 = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+    
+    bullet1.init(this.x + this.width / 4 - bullet1.width / 2, this.y - 10, 10);
+    bullet2.init(this.x + this.width / 2 - bullet2.width / 2, this.y - 10, 10);
+    bullet3.init(this.x + (this.width * 3) / 4 - bullet3.width / 2, this.y - 10, 10);
+    
+    GameGlobal.databus.bullets.push(bullet1, bullet2, bullet3);
+  }
+
+  /**
+   * 扩散射击
+   */
+  shootSpread() {
+    const angles = [-0.3, -0.15, 0, 0.15, 0.3]; // 射击角度
+    
+    angles.forEach(angle => {
+      const bullet = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+      bullet.init(
+        this.x + this.width / 2 - bullet.width / 2, 
+        this.y - 10, 
+        10, 
+        angle
+      );
+      GameGlobal.databus.bullets.push(bullet);
+    });
+  }
+
+  /**
+   * 增强扩散射击
+   */
+  shootEnhancedSpread() {
+    const angles = [-0.4, -0.2, -0.1, 0, 0.1, 0.2, 0.4]; // 更多射击角度
+    
+    angles.forEach(angle => {
+      const bullet = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+      bullet.init(
+        this.x + this.width / 2 - bullet.width / 2, 
+        this.y - 10, 
+        12, // 更快的子弹速度
+        angle
+      );
+      GameGlobal.databus.bullets.push(bullet);
+    });
+  }
+
+  /**
+   * 最大火力射击
+   */
+  shootMaximum() {
+    const angles = [-0.5, -0.3, -0.15, -0.05, 0, 0.05, 0.15, 0.3, 0.5]; // 最多射击角度
+    
+    angles.forEach(angle => {
+      const bullet = GameGlobal.databus.pool.getItemByClass('bullet', Bullet);
+      bullet.init(
+        this.x + this.width / 2 - bullet.width / 2, 
+        this.y - 10, 
+        15, // 最快的子弹速度
+        angle
+      );
+      GameGlobal.databus.bullets.push(bullet);
+    });
   }
 
   update() {

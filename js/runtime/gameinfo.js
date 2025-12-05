@@ -36,6 +36,19 @@ export default class GameInfo extends Emitter {
   renderGameScore(ctx, score) {
     this.setFont(ctx);
     ctx.fillText(score, 10, 30);
+    
+    // 显示升级等级
+    const upgradeLevel = GameGlobal.databus.getUpgradeLevel();
+    if (upgradeLevel > 0) {
+      ctx.fillText(`Level: ${upgradeLevel}`, 10, 60);
+    }
+    
+    // 显示距离下次升级的分数
+    const nextUpgradeScore = (GameGlobal.databus.upgradeLevel + 1) * 100;
+    const scoreToNext = nextUpgradeScore - score;
+    if (scoreToNext > 0) {
+      ctx.fillText(`Next: ${scoreToNext}`, 10, 90);
+    }
   }
 
   renderGameOver(ctx, score) {

@@ -9,10 +9,11 @@ export default class Bullet extends Sprite {
     super(BULLET_IMG_SRC, BULLET_WIDTH, BULLET_HEIGHT);
   }
 
-  init(x, y, speed) {
+  init(x, y, speed, angle = 0) {
     this.x = x;
     this.y = y;
     this.speed = speed;
+    this.angle = angle; // 射击角度
     this.isActive = true;
     this.visible = true;
   }
@@ -23,10 +24,12 @@ export default class Bullet extends Sprite {
       return;
     }
   
-    this.y -= this.speed;
+    // 支持角度射击
+    this.y -= this.speed * Math.cos(this.angle || 0);
+    this.x += this.speed * Math.sin(this.angle || 0);
 
     // 超出屏幕外销毁
-    if (this.y < -this.height) {
+    if (this.y < -this.height || this.x < -this.width || this.x > 375 + this.width) {
       this.destroy();
     }
   }

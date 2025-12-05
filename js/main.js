@@ -66,6 +66,12 @@ export default class Main {
           enemy.destroy(); // 销毁敌机
           bullet.destroy(); // 销毁子弹
           GameGlobal.databus.score += 1; // 增加分数
+          
+          // 检查是否升级
+          if (GameGlobal.databus.checkUpgrade()) {
+            this.showUpgradeEffect();
+          }
+          
           break; // 退出循环
         }
       }
@@ -121,6 +127,19 @@ export default class Main {
 
     this.enemyGenerate(); // 生成敌机
     this.collisionDetection(); // 检测碰撞
+  }
+
+  /**
+   * 显示升级效果
+   */
+  showUpgradeEffect() {
+    // 可以在这里添加升级特效
+    console.log(`Flight upgraded to level ${GameGlobal.databus.getUpgradeLevel()}!`);
+    
+    // 如果有震动API，可以添加震动反馈
+    if (typeof wx !== 'undefined' && wx.vibrateShort) {
+      wx.vibrateShort({ type: 'heavy' });
+    }
   }
 
   // 实现游戏帧循环
